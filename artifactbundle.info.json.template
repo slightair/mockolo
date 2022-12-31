@@ -1,0 +1,15 @@
+{
+    "schemaVersion": "1.0",
+    "artifacts": {
+        "mockolo": {
+            "type": "executable",
+            "version": "VERSION",
+            "variants": [
+                {
+                    "path": "mockolo/bin/mockolo",
+                    "supportedTriples": ["x86_64-apple-macosx", "arm64-apple-macosx"]
+                }
+            ]
+        }
+    }
+}
