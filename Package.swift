@@ -8,23 +8,30 @@ var mockoloFrameworkTargetDependencies: [Target.Dependency] = [
     .product(name: "SwiftSyntax", package: "SwiftSyntax"),
 ]
 
+private let useSwiftParser = true
+
 #if swift(>=5.6)
 dependencies.append(.package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.1"))
 #else
 dependencies.append(.package(url: "https://github.com/apple/swift-argument-parser", "1.0.1"..."1.0.3"))
 #endif
 
+if useSwiftParser {
+    dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50800.0-SNAPSHOT-2022-12-20-a")))
+    mockoloFrameworkTargetDependencies.append(.product(name: "SwiftParser", package: "SwiftSyntax"))
+} else {
 #if swift(>=5.7)
-dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50700.1")))
-mockoloFrameworkTargetDependencies.append(.product(name: "SwiftSyntaxParser", package: "SwiftSyntax"))
+    dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50700.1")))
+    mockoloFrameworkTargetDependencies.append(.product(name: "SwiftSyntaxParser", package: "SwiftSyntax"))
 #elseif swift(>=5.6)
-dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50600.1")))
-mockoloFrameworkTargetDependencies.append(.product(name: "SwiftSyntaxParser", package: "SwiftSyntax"))
+    dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50600.1")))
+    mockoloFrameworkTargetDependencies.append(.product(name: "SwiftSyntaxParser", package: "SwiftSyntax"))
 #elseif swift(>=5.5)
-dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50500.0")))
+    dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50500.0")))
 #else
-dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50400.0")))
+    dependencies.append(.package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50400.0")))
 #endif
+}
 
 let package = Package(
     name: "Mockolo",

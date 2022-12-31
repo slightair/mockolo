@@ -18,8 +18,8 @@ import Foundation
 #if canImport(SwiftSyntax)
 import SwiftSyntax
 #endif
-#if canImport(SwiftSyntaxParser)
-import SwiftSyntaxParser
+#if canImport(SwiftParser)
+import SwiftParser
 #endif
 
 public enum DeclType {
@@ -27,6 +27,25 @@ public enum DeclType {
 }
 
 public class SourceParser {
+    struct Parser {
+        static func source(path: String) -> String {
+            guard let fileData = FileManager.default.contents(atPath: path) else {
+                fatalError("Retrieving contents of \(path) failed")
+            }
+
+            // Avoid using `String(contentsOf:)` because it creates a wrapped NSString.
+            let source = fileData.withUnsafeBytes { buf in
+                return String(decoding: buf.bindMemory(to: UInt8.self), as: UTF8.self)
+            }
+
+            return source
+        }
+
+        static func parse(_ path: String) throws -> SourceFileSyntax {
+            SwiftParser.Parser.parse(source: source(path: path))
+        }
+    }
+
     public init() {}
     /// Parses processed decls (mock classes) and calls a completion block
     /// @param paths File paths containing processed mocks
@@ -91,7 +110,7 @@ public class SourceParser {
 
         do {
             var results = [Entity]()
-            let node = try SyntaxParser.parse(path)
+            let node = try Parser.parse(path)
             let treeVisitor = EntityVisitor(path, annotation: annotation, fileMacro: fileMacro, declType: declType)
             treeVisitor.walk(node)
             let ret = treeVisitor.entities
